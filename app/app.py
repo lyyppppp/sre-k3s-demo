@@ -13,7 +13,7 @@ INDEX_HTML = """
 <html><head><meta charset="utf-8"><title>SRE Demo</title>
 <style>body{font-family:sans-serif;max-width:600px;margin:60px auto;text-align:center}</style></head>
 <body>
-<h1>项目二：k3s 应用 v1</h1>
+<h1>项目二：k3s 应用 v2</h1>
 <p>数据库状态：<b id="db">加载中...</b></p>
 <p>MySQL 版本：<b id="ver">-</b></p>
 <p>你是第 <b id="cnt">-</b> 位访客</p>
