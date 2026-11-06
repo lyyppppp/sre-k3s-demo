@@ -1,0 +1,27 @@
+name: build-and-deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: 登录 ACR
+      run: echo "${{ secrets.ACR_PASSWORD }}" | docker login crpi-6cqsp6kzvdys422n.cn-guangzhou.personal.cr.aliyuncs.com -u "${{ secrets.ACR_USER }}" --password-stdin
+
+    - name: 构建并推送镜像
+      run: |
+        docker build -t crpi-6cqsp6kzvdys422n.cn-guangzhou.personal.cr.aliyuncs.com/sre-demo/app:${{ github.sha }} ./app
+        docker push crpi-6cqsp6kzvdys422n.cn-guangzhou.personal.cr.aliyuncs.com/sre-demo/app:${{ github.sha }}
+
+    - name: SSH 部署到 k3s
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: stu
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          sudo k3s kubectl set image deployment/sre-demo sre-demo=crpi-6cqsp6kzvdys422n.cn-guangzhou.personal.cr.aliyuncs.com/sre-demo/app:${{ github.sha }}
+          sudo k3s kubectl rollout status deployment/sre-demo --timeout=180s
